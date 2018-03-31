@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{C628EED1-A284-F006-FF32-B0D309B0EF09}</ProjectGuid>
+    <ProjectGuid>{DF13860D-023F-91FF-7BA6-82655C1FA2B6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -51,11 +51,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\CoinCollider.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
-     <None Include="Assets\Resources\Sprites\Player\_TXT\readme.txt" />
-     <None Include="Assets\Resources\Sprites\Player\_TXT\LICENSES.txt" />
-     <None Include="Assets\Resources\Sprites\Enemies\_TXT\LICENSES.txt" />
-     <None Include="Assets\Resources\Sprites\Enemies\_TXT\readme.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
