@@ -10,9 +10,11 @@ namespace Assets.Scripts
         {
             if (!other.gameObject.tag.Contains("Player")) return;
 
+            Debug.Log("Obstacle trigger2d Enter");
+
             other.gameObject.GetComponent<PlayerController>().Hit(DamageDone);
 
-            other.attachedRigidbody.AddForce(new Vector2(20 * other.attachedRigidbody.velocity.x, 20 * other.attachedRigidbody.velocity.y));
+            other.attachedRigidbody.AddForce(new Vector2(-20 * other.attachedRigidbody.velocity.x, -20 * other.attachedRigidbody.velocity.y));
         }
     }
 }

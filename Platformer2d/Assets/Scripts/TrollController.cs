@@ -5,28 +5,23 @@ namespace Assets.Scripts
 {
     public class TrollController : MonoBehaviour
     {
-        private Direction _direction;
         private Rigidbody2D _rigidbody2D;
         private Animator _anim;
+        private bool _facingRight = true;
 
         public Transform GroundCheck;
+        private float _groundCheckRadius = 0.2f;
+
         public LayerMask WhatIsGround;
 
         public float MoveForce = 100f;
         public float WaitForSecondsBetweenSteps = 0.2f;
-        public float MaxIdleWaitForSeconds = 2f;
-        public float MinIdleWaitForSeconds = 0f;
-        public float GroundRadius = 0.2f;
-
-        private enum Direction
-        {
-            Left = -1,
-            Right = 1
-        };
+        public float MaxIdleWaitForSeconds = 3f;
+        public float MinIdleWaitForSeconds = 3f;
 
         void Start()
         {
-            _direction = Direction.Right;
+            _facingRight = true;
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _anim = GetComponent<Animator>();
             StartCoroutine(KeepMoving());
@@ -39,46 +34,40 @@ namespace Assets.Scripts
 
             var randomPeriod = Random.Range(MinIdleWaitForSeconds, MaxIdleWaitForSeconds);
 
-            yield return new WaitForSeconds(randomPeriod);
+            yield return new WaitForSeconds(1f);
 
             FlipHorizontally();
+            StopAllCoroutines();
             StartCoroutine(KeepMoving());
         }
 
         private void FlipHorizontally()
         {
-            _direction = _direction == Direction.Right ? Direction.Left : Direction.Right;
+            _facingRight = !_facingRight;
 
             var theScale = transform.localScale;
             theScale.x *= -1;
             transform.localScale = theScale;
         }
 
-
         private IEnumerator KeepMoving()
         {
             _anim.SetBool("Walking", true);
-            
-            while (HasSpace())
-            {
-                if (_rigidbody2D.velocity == Vector2.zero)
-                {
-                    _rigidbody2D.AddForce(new Vector2(MoveForce, 0));
-                }
 
-                yield return new WaitForSeconds(WaitForSecondsBetweenSteps);
+            bool hasSpace = Physics2D.OverlapCircle
+                (GroundCheck.position, _groundCheckRadius, WhatIsGround);
+
+            while (hasSpace)
+            {
+                _rigidbody2D.velocity = new Vector2(_facingRight ? MoveForce : -MoveForce, 0);
+
+                yield return new WaitForSeconds(0.1f);
+
+                hasSpace = Physics2D.OverlapCircle(GroundCheck.position, _groundCheckRadius, WhatIsGround);
             }
 
+            StopAllCoroutines();
             StartCoroutine(IdleForARandomPeriod());
         }
-
-        private bool HasSpace()
-        {
-            bool result = Physics2D.OverlapCircle
-                (GroundCheck.position, GroundRadius, WhatIsGround);
-
-            return result;
-        }
-
     }
 }
