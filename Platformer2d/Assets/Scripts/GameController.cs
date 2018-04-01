@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Assets.Scripts
@@ -7,6 +9,10 @@ namespace Assets.Scripts
     {
         public Text HealthText;
         public Text CoinsText;
+
+        public string[] LevelScenesNames;
+
+        private int _currentLevel;
 
         public Transform SpawnPoint;
 
@@ -33,6 +39,9 @@ namespace Assets.Scripts
         {
             _restartGamePrompt = GameObject.FindGameObjectWithTag("RestartGamePrompt");
             _restartGamePrompt.gameObject.SetActive(false);
+
+            _currentLevel = Array.IndexOf(LevelScenesNames, SceneManager.GetActiveScene().name);
+
             ResetGame();
         }
 
@@ -86,6 +95,24 @@ namespace Assets.Scripts
         {
             ResetGame();
             GamePaused = false;
+        }
+
+        public void ProceedToNextLevel()
+        {
+            _currentLevel++;
+
+            if (_currentLevel == LevelScenesNames.Length)
+            {
+                EndGame();
+                return;
+            }
+
+            SceneManager.LoadScene(LevelScenesNames[_currentLevel]);
+        }
+
+        private void EndGame()
+        {
+            Debug.Log("Finished game");
         }
     }
 }
