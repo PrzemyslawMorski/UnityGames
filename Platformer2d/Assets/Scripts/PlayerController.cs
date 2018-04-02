@@ -7,49 +7,45 @@ namespace Assets.Scripts
         public float MaxSpeed = 10f;
         public float JumpForce = 700f;
         public int MaxHealth = 3;
+        public GameController Game;
+        public Transform GroundCheck;
+        public LayerMask WhatIsGround;
 
         private bool _facingRight = true;
         private Animator _anim;
         private Rigidbody2D _rigidbody2D;
-        private GameController _game;
 
         private bool _grounded = false;
         private const float GroundRadius = 0.2f;
 
-        public Transform GroundCheck;
-        public LayerMask WhatIsGround;
-
-        private int _numCoins;
-        private int _health;
+        public int Health { get; private set; }
+        public int Gold { get; private set; }
 
         private void Start()
         {
-            _numCoins = 0;
-
-            _health = MaxHealth;
             _anim = GetComponent<Animator>();
             _rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
+            Game = FindObjectOfType<GameController>();
 
-            _game = FindObjectOfType<GameController>();
+            Gold = 0;
+            Health = MaxHealth;
 
-            _game.UpdateHealthStatus(_health);
-            _game.UpdateNumCoins(_numCoins);
+            Game.UpdateHealthStatus(Health);
+            Game.UpdateNumCoins(Gold);
         }
 
         private void FixedUpdate()
         {
             if (GameController.GamePaused)
             {
-                _rigidbody2D.velocity = new Vector2(0f, 0f);
-                _anim.SetBool("Ground", true);
-                _anim.SetFloat("vSpeed", 0f);
-                _anim.SetFloat("Speed", 0f);
+                StopMovement();
                 return;
             }
 
-            if (!GetComponent<SpriteRenderer>().isVisible)
+            var mainCamera = Camera.main;
+            if (_rigidbody2D.position.y < -1 * mainCamera.orthographicSize)
             {
-                _game.PlayerFell();
+                Game.PlayerFell();
                 return;
             }
 
@@ -75,7 +71,6 @@ namespace Assets.Scripts
             if (GameController.GamePaused) return;
 
             if (!_grounded || !Input.GetKeyDown(KeyCode.Space)) return;
-
             _anim.SetBool("Ground", false);
             _rigidbody2D.AddForce(new Vector2(0, JumpForce));
         }
@@ -88,27 +83,35 @@ namespace Assets.Scripts
             transform.localScale = theScale;
         }
 
+        private void StopMovement()
+        {
+            _rigidbody2D.velocity = Vector2.zero;
+            _anim.SetBool("Ground", true);
+            _anim.SetFloat("vSpeed", 0f);
+            _anim.SetFloat("Speed", 0f);
+        }
+
         public void PickUpCoins(int numCoins)
         {
             if (numCoins < 0) return;
 
-            _numCoins += numCoins;
-            _game.UpdateNumCoins(_numCoins);
+            Gold += numCoins;
+            Game.UpdateNumCoins(Gold);
         }
 
         public void Hit(int healthLost)
         {
             if (healthLost < 0) return;
 
-            _health -= healthLost;
+            Health -= healthLost;
 
-            if (_health <= 0)
+            if (Health <= 0)
             {
-                _game.PlayerDied();
+                Game.PlayerDied();
             }
             else
             {
-                _game.UpdateHealthStatus(_health);
+                Game.UpdateHealthStatus(Health);
             }
         }
 
@@ -116,8 +119,26 @@ namespace Assets.Scripts
         {
             if (healthHealed <= 0) return;
 
-            _health += healthHealed;
-            _game.UpdateHealthStatus(_health);
+            Health += healthHealed;
+
+            if (Health > MaxHealth)
+            {
+                Health = MaxHealth;
+            }
+
+            Game.UpdateHealthStatus(Health);
+        }
+
+        public void HealToFull()
+        {
+            Health = MaxHealth;
+            Game.UpdateHealthStatus(Health);
+        }
+
+        public void ResetGold()
+        {
+            Gold = 0;
+            Game.UpdateNumCoins(Gold);
         }
     }
 }

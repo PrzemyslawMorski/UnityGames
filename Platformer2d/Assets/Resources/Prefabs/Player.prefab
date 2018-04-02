@@ -54,8 +54,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1699138098225478}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -4.01, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: -4, z: 0}
+  m_LocalScale: {x: 2, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4905990781342778}
   m_RootOrder: 0
@@ -67,8 +67,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1488857659158442}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.01, y: 0.89, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalPosition: {x: -27.900587, y: 5.37, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4493177923221300}
   m_Father: {fileID: 0}
@@ -106,9 +106,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0, y: -2.8}
+  m_Offset: {x: -0.6, y: -1.5}
   serializedVersion: 2
-  m_Radius: 1.1
+  m_Radius: 2.2294834
 --- !u!61 &61824425130148608
 BoxCollider2D:
   m_ObjectHideFlags: 1
@@ -162,13 +162,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17177cb796578c44e9e5c98c93047b37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxSpeed: 10
-  JumpForce: 700
+  MaxSpeed: 50
+  JumpForce: 1400
   MaxHealth: 3
+  Game: {fileID: 0}
   GroundCheck: {fileID: 4493177923221300}
   WhatIsGround:
     serializedVersion: 2
-    m_Bits: 4294967039
+    m_Bits: 4294966271
 --- !u!212 &212569733833640840
 SpriteRenderer:
   m_ObjectHideFlags: 1

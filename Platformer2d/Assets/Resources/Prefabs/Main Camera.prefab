@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 124908957721032000}
   - component: {fileID: 81009231487617044}
   - component: {fileID: 114130584341076616}
+  - component: {fileID: 114878024609528968}
   m_Layer: 5
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -63,7 +64,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 25
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -97,9 +98,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 165dbfad5f5b9e54fbdad2b519541afb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HealthText: {fileID: 0}
-  CoinsText: {fileID: 0}
-  SpawnPoint: {fileID: 0}
+  LevelScenesNames:
+  - Level_1
+  - Level_2
+--- !u!114 &114878024609528968
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1892008674769050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1690312454, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EventMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_MaxRayIntersections: 0
 --- !u!124 &124908957721032000
 Behaviour:
   m_ObjectHideFlags: 1

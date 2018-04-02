@@ -16,7 +16,6 @@ namespace Assets.Scripts
         {
             if (!other.gameObject.tag.Contains("Player")) return;
             _game.ProceedToNextLevel();
-            Debug.Log("Proceed");
         }
     }
 }

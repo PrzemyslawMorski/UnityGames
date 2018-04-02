@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,20 +8,13 @@ namespace Assets.Scripts
 {
     public class GameController : MonoBehaviour
     {
-        public Text HealthText;
-        public Text CoinsText;
-
         public string[] LevelScenesNames;
-
         private int _currentLevel;
 
-        public Transform SpawnPoint;
-
         private static GameController _controller;
+        private static GameObject _player;
 
-        private GameObject _restartGamePrompt;
-
-        public static bool GamePaused = false;
+        public static bool GamePaused;
 
         private void Awake()
         {
@@ -37,18 +31,23 @@ namespace Assets.Scripts
 
         private void Start()
         {
-            _restartGamePrompt = GameObject.FindGameObjectWithTag("RestartGamePrompt");
-            _restartGamePrompt.gameObject.SetActive(false);
-
             _currentLevel = Array.IndexOf(LevelScenesNames, SceneManager.GetActiveScene().name);
-
             ResetGame();
         }
 
         public void PlayerDied()
         {
             GamePaused = true;
-            _restartGamePrompt.gameObject.SetActive(true);
+            LaunchRestartGamePrompt();
+        }
+
+        //RestartGamePrompt calls PlayerQuits or PlayerWantsReplay methods
+        private static void LaunchRestartGamePrompt()
+        {
+            if (GameObject.FindGameObjectWithTag("RestartGamePrompt") != null) return;
+
+            var foreground = GameObject.Find("Foreground");
+            Instantiate(Resources.Load("Prefabs/RestartGamePrompt"), foreground.transform, false);
         }
 
         public void PlayerFell()
@@ -56,34 +55,60 @@ namespace Assets.Scripts
             ResetLevel();
         }
 
-        private static void ResetGame()
+        private void ResetGame()
         {
-            ResetPlayer();
+            var levelName = LevelScenesNames[0];
+            _currentLevel = 0;
+
+            RespawnPlayer();
+            ResetPlayerStats();
+            UpdateLevelName(levelName);
         }
 
-        private static void ResetLevel()
+        private static void ResetPlayerStats()
         {
-            ResetPlayer();
+            var playerController = _player.GetComponent<PlayerController>();
+            playerController.HealToFull();
+            playerController.ResetGold();
         }
 
-        private static void ResetPlayer()
+        private void ResetLevel()
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null) Destroy(player);
+            RespawnPlayer();
+        }
 
-            var spawnPoint = GameObject.FindGameObjectWithTag("SpawnPoint");
+        private void RespawnPlayer()
+        {
+            var spawnPoint = GameObject.Find("SpawnPoint");
 
-            Instantiate(Resources.Load("Prefabs/Player"), spawnPoint.transform.position, Quaternion.identity);
+            if (_player == null)
+            {
+                _player = Instantiate(Resources.Load("Prefabs/Player"), spawnPoint.transform.position,
+                    Quaternion.identity) as GameObject;
+
+                DontDestroyOnLoad(_player);
+            }
+            _player.GetComponent<PlayerController>().Game = this;
+            _player.transform.position = spawnPoint.transform.position;
+            _player.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         }
 
         public void UpdateHealthStatus(int health)
         {
-            HealthText.text = "Health: " + health;
+            var healthText = GameObject.Find("HealthText").GetComponent<Text>();
+            if (healthText != null) healthText.text = "Health: " + health;
         }
 
         public void UpdateNumCoins(int numCoins)
         {
-            CoinsText.text = "Coins: " + numCoins;
+            var coinsText = GameObject.Find("GoldText").GetComponent<Text>();
+            if (coinsText != null) coinsText.text = "Coins: " + numCoins;
+        }
+
+        private static void UpdateLevelName(string levelName)
+        {
+            var levelNameText = GameObject.Find("LevelNameText").GetComponent<Text>();
+            if (levelNameText != null) levelNameText.text = levelName;
         }
 
         public void PlayerQuits()
@@ -101,16 +126,25 @@ namespace Assets.Scripts
         {
             _currentLevel++;
 
-            if (_currentLevel == LevelScenesNames.Length)
+            if (_currentLevel >= LevelScenesNames.Length)
             {
                 EndGame();
-                return;
             }
+            else
+            {
+                GamePaused = true;
 
-            SceneManager.LoadScene(LevelScenesNames[_currentLevel]);
+                var levelName = LevelScenesNames[_currentLevel];
+                SceneManager.LoadScene(levelName);
+
+                RespawnPlayer();
+                UpdateLevelName(levelName);
+
+                GamePaused = false;
+            }
         }
 
-        private void EndGame()
+        private static void EndGame()
         {
             Debug.Log("Finished game");
         }
