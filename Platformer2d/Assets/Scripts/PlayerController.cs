@@ -107,6 +107,8 @@ namespace Assets.Scripts
 
             if (Health <= 0)
             {
+                Health = 0;
+                Game.UpdateHealthStatus(Health);
                 Game.PlayerDied();
             }
             else

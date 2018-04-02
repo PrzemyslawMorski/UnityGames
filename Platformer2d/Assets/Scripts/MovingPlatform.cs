@@ -7,34 +7,36 @@ public class MovingPlatform : MonoBehaviour
     public float MaxMoveRight = 10f;
     public float MaxMoveLeft = 10f;
     public float WaitForSecondsBetweenSteps = 0.2f;
-    public float MoveForce = 10f;
+    public float MoveForce = 0.01f;
 
     private int _movingRight = 1;
 
     private float _startX;
 
-    void Start ()
+    void Start()
     {
         _startX = transform.position.x;
-        GetComponent<Rigidbody2D>().AddForce(new Vector2(_movingRight * MoveForce, 0));
     }
 
     void FixedUpdate()
     {
+        transform.position = new Vector3(transform.position.x + _movingRight * MoveForce, transform.position.y,
+            transform.position.z);
+
         if (_movingRight == 1 && transform.position.x >= _startX + MaxMoveRight
             || _movingRight != 1 && transform.position.x <= _startX - MaxMoveLeft)
         {
-            ReverseMovingForce();
+            _movingRight *= -1;
         }
     }
 
-    private void ReverseMovingForce()
+    void OnTriggerStay2D(Collider2D other)
     {
-        GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-
-        _movingRight *= -1;
-
-        GetComponent<Rigidbody2D>().AddForce(new Vector2(_movingRight * MoveForce, 0));
+        other.transform.parent = transform;
     }
 
+    void OnTriggerExit2D(Collider2D other)
+    {
+        other.transform.parent = null;
+    }
 }
